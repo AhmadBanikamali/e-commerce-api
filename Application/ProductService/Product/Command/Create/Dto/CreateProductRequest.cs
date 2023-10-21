@@ -1,7 +1,6 @@
 ﻿using Application.Common.Dto;
-using Domain;
 
-namespace Application.ProductService.Command.Create.Dto;
+namespace Application.ProductService.Product.Command.Create.Dto;
 
 public class CreateProductRequest
 {
@@ -13,6 +12,6 @@ public class CreateProductRequest
     public string Discount { get; set; }
     public ICollection<ProductDetailDto> ProductDetails { get; set; }
     public ICollection<GuarantyDto> Guaranties { get; set; }
-    public CategoryDto Category { get; set; }
+    public int CategoryId { get; set; }
     
 }

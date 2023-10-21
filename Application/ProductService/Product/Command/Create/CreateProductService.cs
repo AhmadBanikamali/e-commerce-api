@@ -1,11 +1,10 @@
 ﻿using Application.Common;
 using Application.Common.BaseDto;
 using Application.Common.CQRS;
-using Application.ProductService.Command.Create.Dto;
+using Application.ProductService.Product.Command.Create.Dto;
 using AutoMapper;
-using Domain;
 
-namespace Application.ProductService.Command.Create;
+namespace Application.ProductService.Product.Command.Create;
 
 public class CreateProductService:Command<CreateProductRequest>
 {
@@ -15,7 +14,12 @@ public class CreateProductService:Command<CreateProductRequest>
 
     public override Response Execute(CreateProductRequest request)
     {
-        DatabaseContext.Product.Add(Mapper.Map<CreateProductRequest,Product>(request));
+        var category = DatabaseContext.Category.FirstOrDefault(x => x.Id == request.CategoryId);
+        var product = Mapper.Map<CreateProductRequest,Domain.Product>(request);
+        if (category != null) 
+            product.Category = category;
+
+        DatabaseContext.Product.Add(product);
         DatabaseContext.SaveChanges();
         return new Response();
     }

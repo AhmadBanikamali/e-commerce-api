@@ -1,6 +1,10 @@
 using Application.Common;
 using Application.Common.Mapper;
-using Application.ProductService.Command.Create;
+using Application.ProductService.Category.Command;
+using Application.ProductService.Category.Command.Dto;
+using Application.ProductService.Category.Query;
+using Application.ProductService.Product.Command.Create;
+using Application.ProductService.Product.Query.Single;
 using Domain;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +35,9 @@ builder.Services.AddAutoMapper(typeof(ProductMapper));
 
 builder.Services.AddTransient<IDatabaseContext,SqlServerDbContext>();
 builder.Services.AddTransient<CreateProductService>();
+builder.Services.AddTransient<CreateCategoryService>();
+builder.Services.AddTransient<GetCategoriesService>();
+builder.Services.AddTransient<GetSingleProductService>();
 
 var app = builder.Build();
 

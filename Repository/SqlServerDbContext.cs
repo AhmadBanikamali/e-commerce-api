@@ -5,14 +5,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Repository;
 
-public class SqlServerDbContext : IdentityDbContext<ApplicationUser>,IDatabaseContext
+public class SqlServerDbContext : IdentityDbContext<ApplicationUser>, IDatabaseContext
 {
-    public SqlServerDbContext(DbContextOptions options):base(options)
+    public SqlServerDbContext(DbContextOptions options) : base(options)
     {
-        
     }
 
     public DbSet<Product> Product { get; set; }
+    public DbSet<Category> Category { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         foreach (var entityType in builder.Model.GetEntityTypes())
@@ -24,7 +25,10 @@ public class SqlServerDbContext : IdentityDbContext<ApplicationUser>,IDatabaseCo
         }
 
         builder.Entity<Product>()
-            .HasQueryFilter(m => EF.Property<bool>(m, "IsRemoved") == false);
+            .HasQueryFilter(m => EF.Property<bool>(m, "IsRemoved") == false)
+            .HasOne(x => x.Category).WithMany(x => x.Products)
+            .HasForeignKey(x => x.CategoryId)
+            ;
 
         builder.Entity<ProductDetail>()
             .HasQueryFilter(m => EF.Property<bool>(m, "IsRemoved") == false);
@@ -38,13 +42,19 @@ public class SqlServerDbContext : IdentityDbContext<ApplicationUser>,IDatabaseCo
         builder.Entity<Category>(entity =>
         {
             entity.HasQueryFilter(m => EF.Property<bool>(m, "IsRemoved") == false);
-            entity.HasKey(x => x.Name);
             entity.HasOne(x => x.ParentCategory)
                 .WithMany(x => x.ChildCategories)
-                .HasForeignKey(x => x.Name)
+                .HasForeignKey(x => x.ParentCategoryId)
                 .IsRequired(false)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            entity
+                .HasMany(x => x.Products)
+                .WithOne(x => x.Category)
+                .HasForeignKey(x => x.CategoryId)
+                ;
         });
+
 
         base.OnModelCreating(builder);
     }
